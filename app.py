@@ -2,7 +2,8 @@
 
 from flask import Flask, render_template, request, jsonify
 from llm_engine import load_multi_agents, classify_query_target, run_combined_rag
-
+import markdown
+from markupsafe import Markup
 
 app = Flask(__name__)
 
@@ -29,7 +30,7 @@ def get_bot_response():
         else:
             final_answer = qa_chains["trinidad"].invoke({"query": user_message})["result"]
 
-        return jsonify({"answer": final_answer})
+        return jsonify({"answer": Markup(markdown.markdown(final_answer))})
 
     except Exception as e:
         return jsonify({"answer": f"Error: {str(e)}"})

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Multi-Agent Professional ChatBot</title>
+    <link rel="icon" href="static/fav.png" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="static/fav_apple.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:wght@400;600&display=swap" rel="stylesheet"> 
+
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #667eea;
+            color: white;
+            text-align: left;
+            padding: 10px 40px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .footer {
+            background-color: #667eea;
+            color: white;
+            text-align: center;
+            padding: 5px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-size: 0.9em;
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 100px); /* header + footer */
+            padding-top: 60px;
+            padding-bottom: 40px;
+        }
+
+        .left-column {
+            width: 40%;
+            padding: 20px;
+            border-right: 1px solid #ccc;
+            overflow-y: auto;
+        }
+
+        .right-column {
+            width: 60%;
+            display: flex;
+            flex-direction: column;
+            background-color: #c3dafe;
+            padding: 20px;
+        }
+
+        #chat-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #chatbox {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            scroll-behavior: smooth;
+        }
+
+        .userText, .botText {
+            margin-bottom: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            line-height: 1.5;
+            max-width: 95%;
+        }
+
+        .userText {
+            background-color: #667eea;
+            color: white;
+        }
+
+        .botText {
+            position: relative;
+            background-color: white;
+            color: black;
+            padding-left: 60px;
+            overflow-wrap: break-word;
+        }
+
+        .botIcon {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        #userInput {
+            display: flex;
+            border-top: 1px solid #ccc;
+            padding: 10px;
+            background-color: #c3dafe;
+        }
+
+        #textInput {
+            flex: 1;
+            border: none;
+            padding: 10px;
+            border-radius: 20px;
+            font-size: 16px;
+            background-color: #f5f5f5;
+        }
+
+        #textInput:focus {
+            outline: none;
+            background-color: white;
+        }
+
+        .botText span h1, .botText span h2, .botText span h3 {
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        .botText span ul {
+            margin-left: 20px;
+        }
+
+        .botText span strong, .botText span b {
+            font-weight: bold;
+        }
+
+        @media screen and (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .left-column, .right-column {
+                width: 100%;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h3>Multi-Agent Professional ChatBot</h3>
+    </div>
+
+    <div class="container">
+        <div class="right-column">
+            <h3><b>Ask anything about Trinidad or Jorge!</b></h3>
+            <div id="chat-container">
+                <div id="chatbox">
+                    <div class="botText">
+                        <img class="botIcon" src="static/bot.jpg" alt="Bot">
+                        <span><strong>Hello!</strong> Ask me about the professional or educational background of <strong>Trinidad Monreal</strong> or <strong>Jorge Valdez</strong>.</span>
+                    </div>
+                </div>
+                <div id="userInput">
+                    <input id="textInput" type="text" name="msg" placeholder="Message" />
+                </div>
+            </div>
+        </div>
+
+        <div class="left-column">
+            <h4><b>How it works:</b></h4>
+            <p>This chatbot uses <b>Retrieval-Augmented Generation (RAG)</b> to fetch context from CVs and generate answers via a large language model (LLM). If you ask about both people, it merges their contexts for a comparison.</p>
+            <p><b>View the code and instructions on <a href="https://github.com/tmonreal" target="_blank">my GitHub</a>.</b></p>
+            <p><b>Connect with me on <a href="https://www.linkedin.com/in/trinidad-monreal/" target="_blank">LinkedIn</a></b></p>
+            <p><img src="static/diagram.jpg" alt="System Diagram" width="100%"></p>
+        </div>
+    </div>
+
+    <div class="footer">
+        &copy; 2025 Multi-Agent ChatBot – Trinidad Monreal. All rights reserved.
+    </div>
+
+    <script>
+        function getBotResponse() {
+            var rawText = $("#textInput").val();
+            var userHtml = '<p class="userText"><span>' + rawText + "</span></p>";
+            $("#textInput").val("");
+            $("#chatbox").append(userHtml);
+            document.getElementById("userInput").scrollIntoView({ block: "start", behavior: "smooth" });
+
+            $.post("/get", { msg: rawText }).done(function (data) {
+                var botHtml = '<div class="botText">';
+                botHtml += '<img class="botIcon" src="static/bot.jpg" alt="Bot Icon">';
+                botHtml += '<span>' + data.answer + "</span>";
+                botHtml += '</div>';
+                $("#chatbox").append(botHtml);
+                $("#chatbox").scrollTop($("#chatbox")[0].scrollHeight);
+                document.getElementById("userInput").scrollIntoView({ block: "start", behavior: "smooth" });
+            });
+        }
+
+        $("#textInput").keypress(function (e) {
+            if (e.which == 13) {
+                getBotResponse();
+            }
+        });
+    </script>
+</body>
+</html>
