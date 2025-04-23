@@ -1,5 +1,3 @@
-# application.py
-
 from flask import Flask, render_template, request, jsonify
 from llm_engine import load_multi_agents, classify_query_target, run_combined_rag
 import markdown
@@ -7,7 +5,6 @@ from markupsafe import Markup
 
 app = Flask(__name__)
 
-# Load the LLM + Retriever chain once on startup
 qa_chains, groq_model = load_multi_agents()
 
 @app.route("/")

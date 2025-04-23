@@ -50,7 +50,7 @@ def classify_query_target(llm, query: str):
 
     raw_output = llm.invoke(classification_prompt)
     result = getattr(raw_output, "content", str(raw_output)).strip().lower()
-    print("🧪 Raw result content:", result)
+    print("Raw result content:", result)
 
     for label in ["trinidad", "jorge", "both", "none"]:
         if result.startswith(label):
@@ -116,21 +116,24 @@ def load_multi_agents():
 
     return qa_chains, groq_model
 
-def run_combined_rag(query: str, qa_chains: dict, llm) -> str:
+def run_combined_rag(query: str, qa_chains: dict, llm, debug=False) -> str:
     # Retrieve relevant documents for each person
     docs_t = qa_chains["trinidad"].retriever.invoke(query)
     docs_j = qa_chains["jorge"].retriever.invoke(query)
 
-    # Add source labels
+    # Add source labels for llm to distinguish 
     for doc in docs_t:
         doc.page_content = f"Trinidad's CV:\n{doc.page_content}"
     for doc in docs_j:
         doc.page_content = f"Jorge's CV:\n{doc.page_content}"
 
-    # Combine documents
     all_docs: list[Document] = docs_t + docs_j
 
-    # Prompt
+    if debug:
+        print("\n📄 Top retrieved chunks:")
+        for i, doc in enumerate(all_docs):
+            print(f"\n--- Chunk {i+1} ---\n{doc.page_content.strip()}")
+
     prompt = PromptTemplate(
         template="""
         Use the following context from two professional profiles to answer the question below.
@@ -145,8 +148,6 @@ def run_combined_rag(query: str, qa_chains: dict, llm) -> str:
         input_variables=["context", "question"],
     )
 
-    # Create and run the chain
     stuff_chain = create_stuff_documents_chain(llm, prompt, document_variable_name="context")
-
     response = stuff_chain.invoke({"context": all_docs, "question": query})
     return response

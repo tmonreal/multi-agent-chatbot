@@ -73,7 +73,7 @@ else:
     print("❌ Timeout: vectors not confirmed.")
 
 # =====================
-# Index JORGE
+# Index JORGE 
 # =====================
 jorge_cv_path = r'docs/CV_JORGE_CEFERINO_VALDEZ.pdf'
 jorge_doc = read_doc(jorge_cv_path)
