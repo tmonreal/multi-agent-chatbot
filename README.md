@@ -58,7 +58,7 @@ Then open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
 
 ---
 
-## 🧪 Manual Testing
+## Manual Testing
 
 You can test the logic from the terminal using:
 
@@ -89,17 +89,17 @@ This script prints the LLM classification, retrieved chunks, and generated answe
 
 ## 🎥 Demo
 
-### 👀 Quick Preview (GIF)
+Watch the demo video below:
 
 ![Chatbot Demo](demo/demo-tp2.gif)
 
-### 🎞️ Full Video Demo
+Or download it directly:
 
 👉 [Click to download demo](demo/demo-tp2.webm)
 
 ---
 
-## 🙌 Credits
+## Credits
 
 - Embedding model by [Hugging Face](https://huggingface.co)
 - LLM served by [Groq](https://groq.com), using [Meta’s LLaMA 4 17B Scout](https://ai.meta.com/llama/)
